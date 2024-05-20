@@ -1,0 +1,61 @@
+tareas_SIN_hilos.py
+
+Tiempo de Ejecución:
+El tiempo total de ejecución del programa es la suma de los tiempos de las tres tareas.
+tarea_1(): El tiempo de ejecución es variable y depende de la velocidad de procesamiento de la máquina. Aunque el bucle puede ejecutar rápidamente en una máquina más potente, en una máquina menos potente puede tardar más.
+tarea_2() y tarea_3(): El tiempo de ejecución es fijo (1 segundo y 4 segundos respectivamente), ya que utilizan time.sleep(), que introduce una espera independiente de la velocidad de la máquina.
+
+Predictibilidad:
+tarea_1() es impredecible porque su tiempo de ejecución depende de varios factores como la velocidad del CPU y la carga actual del sistema.
+tarea_2() y tarea_3() son predecibles ya que tienen tiempos de espera fijos.
+
+Máxima Velocidad Posible (dependientes de la máquina):
+Ordenar una lista grande: La eficiencia de los algoritmos de ordenación depende significativamente de la velocidad de la CPU y la cantidad de datos a ordenar.
+Cálculos intensivos: Operaciones como la multiplicación de matrices grandes, simulaciones numéricas, o procesamiento de gráficos 3D, dependen fuertemente de la velocidad del procesador y la GPU.
+
+Velocidad de respuesta no dependiente de la máquina:
+Acceso a una base de datos remota: El tiempo de respuesta puede variar debido a la latencia de red, la carga en el servidor de la base de datos, y otros factores externos.
+Leer un archivo desde una red: La velocidad de lectura depende de la latencia de la red y la velocidad del servidor de archivos, no de la máquina local.
+Entradas del usuario: La velocidad a la que un usuario proporciona entradas es impredecible y no depende de la velocidad de procesamiento de la máquina.
+
+
+tareas_CON_hilos.py
+
+Tiempo de ejecución:
+El tiempo total de ejecución del programa se reduce significativamente en comparación con la versión anterior. En la versión multihilo, el tiempo total es aproximadamente el tiempo que toma la tarea más larga (tarea_3), que es alrededor de 4 segundos. En cambio, en la versión anterior, el tiempo total sería la suma de los tiempos de todas las tareas.
+
+Mejora del tiempo de respuesta:
+Sí, se mejoró el tiempo de respuesta con respecto al mismo programa sin hilos. Esto se debe a que las tareas se ejecutan de manera concurrente, aprovechando mejor los recursos del sistema. En un sistema con múltiples núcleos, cada tarea puede ejecutarse en paralelo, reduciendo el tiempo total de ejecución.
+
+Orden de ejecución:
+Las funciones no necesariamente completan su ejecución en el orden establecido. El orden de inicio es garantizado por el programa, pero el orden de finalización depende de la duración de cada tarea y de la planificación del sistema operativo. Por ejemplo, tarea_1 puede finalizar antes que tarea_2 o tarea_3 debido a su naturaleza de máxima velocidad posible, a pesar de que se inició primero.
+
+Carga de Recursos Concurrente:
+Los navegadores web descargan múltiples recursos (imágenes, CSS, JavaScript, etc.) de manera concurrente utilizando hilos. Esto reduce significativamente el tiempo total de carga de una página web, ya que los recursos no se descargan secuencialmente uno por uno.
+
+sumador-restador_CON_race.py
+
+Tiempo de Ejecución
+Al ejecutar el código varias veces, se puede observar que el tiempo de ejecución es bastante rápido, ya que las operaciones realizadas (sumar y restar) son simples. Sin embargo, el tiempo de ejecución específico puede variar ligeramente debido a la concurrencia y la gestión de hilos por parte del sistema operativo.
+
+Valor Final del Acumulador
+El valor final del acumulador no es consistente y puede variar en cada ejecución. Aunque se podría esperar que el valor final sea 0 (porque cada hilo realiza exactamente 1000 operaciones que suman y restan 5 respectivamente), en realidad, este valor puede ser diferente de 0 en muchas ejecuciones.
+
+Razón del Comportamiento
+Este comportamiento ocurre debido a una condición de carrera. Ambas funciones (sumador y restador) acceden y modifican la variable acumulador de manera concurrente sin la debida sincronización. Los pasos son:
+
+- Lectura del valor actual del acumulador (tmp = acumulador)
+- Modificación del valor temporal (tmp = tmp + 5 o tmp = tmp - 5)
+- Asignación del valor temporal de vuelta al acumulador (acumulador = tmp)
+Dado que estos pasos no están, pueden ocurrir cambios de contexto en medio de estas operaciones, lo que lleva a inconsistencias. Por ejemplo, ambos hilos pueden leer el mismo valor inicial de acumulador, realizar sus modificaciones y luego escribir el resultado de vuelta, perdiendo una de las modificaciones.
+
+Corrección de la Condición de Carrera
+Para corregir esta condición de carrera sin dejar de utilizar hilos, se puede utilizar un mecanismo de sincronización como un bloqueo (lock). Python proporciona la clase Lock en el módulo threading para este propósito.
+
+sumador-restador_SIN_race.py
+
+Valor Final del Acumulador
+Al ejecutar varias veces el código con la protección mediante Lock, el valor final del acumulador debería ser consistentemente 0. Esto se debe a que el Lock asegura que las operaciones sobre el acumulador sean atómicas, eliminando así la condición de carrera que estaba presente en el código original.
+
+Tiempo de Ejecución
+El tiempo de ejecución del código es mayor en comparación con la versión sin Lock, debido a que los hilos ahora tienen que esperar su turno para acceder al acumulador. Esto introduce una sincronización que no existía en el código original, haciendo que los hilos no puedan ejecutar sus operaciones simultáneamente cuando intentan modificar el acumulador. Sin embargo, la diferencia en tiempo no es muy significativa para este pequeño ejemplo.
